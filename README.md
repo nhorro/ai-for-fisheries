@@ -1,6 +1,8 @@
-# Espacio de trabajo de proyecto final
+# IA para pesca
 
-Este documento describe la organización de directorios para el desarrollo y ensayo de componentes utilizados en el proyecto final.
+Este proyecto consiste en la utilización de IA para monitoreo de actividades a bordo de buques pesqueros. Se integran componentes que se mantienen en repositorios separados, para formar una cadena completa de procesamiento.
+
+Este documento describe la organización de directorios para el desarrollo y ensayo de componentes utilizados.
 
 ## Contenido
 
@@ -8,7 +10,7 @@ Este documento describe la organización de directorios para el desarrollo y ens
 
 ## Introducción
 
-Este proyecto consiste en una cadena de procesamiento que integra distintos componentes. 
+- Este proyecto consiste en una cadena de procesamiento que integra distintos componentes.
 
 - Todos los componentes esperan una entrada y generan una salida. La entrada puede ser la salida de un componente anterior.
 
@@ -56,8 +58,6 @@ export WORKSPACE_PATH=~/workspace/invap-fiuba-proyecto-final
 mkdir $WORKSPACE_PATH
 cd $WORKSPACE_PATH
 ```
-
-
 
 ## Descripción de componentes
 

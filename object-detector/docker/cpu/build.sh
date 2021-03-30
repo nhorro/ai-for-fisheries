@@ -1,0 +1,1 @@
+docker build -t ubuntu18-opencv4-cpu .
