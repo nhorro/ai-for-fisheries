@@ -2,15 +2,15 @@
 
 Este proyecto consiste en la utilización de IA para monitoreo de actividades a bordo de buques pesqueros. Se integran componentes que se mantienen en repositorios separados, para formar una cadena completa de procesamiento.
 
-Este documento describe la organización de directorios para el desarrollo y ensayo de componentes utilizados.
+![diagrama_bloques](assets/diagrama_bloques.png)
+
+Este documento describe la organización de directorios para el desarrollo y ensayo de componentes utilizados. El objetivo es poder replicar un ambiente de trabajo en distintas PCs reduciendo al mínimo posible los pasos de configuración. El flujo de trabajo propuesto es para prototipado.
 
 ## Contenido
 
 [TOC]
 
 ## Introducción
-
-- Este proyecto consiste en una cadena de procesamiento que integra distintos componentes.
 
 - Todos los componentes esperan una entrada y generan una salida. La entrada puede ser la salida de un componente anterior.
 
@@ -35,13 +35,13 @@ Se prone la siguiente organización de directorios.
 
 ```
 $WORKSPACE_PATH
+	|-data
 	|-data-preparation
 	|-object-detector-trainer
 	|-object-tracker
 	|-object-tracker-trainer
-	|-tests
-	|-processing-pipelines
-	|-data
+	|-reports
+	|-processing-pipelines	
 	|-tmp
 	README.md
 ```
@@ -49,23 +49,71 @@ $WORKSPACE_PATH
 Convenciones:
 
 - La ruta absoluta del directorio de espacio de trabajo será referida como $WORKSPACE_PATH.
-- Cada componente obtendrá sus entradas y generará sus salidas en $WORKSPACE/data. Nota: con excepción de archivos de configuración u otros de tamaño reducido, el contenido de de este directorio no se mantiene en .git. 
+- Cada componente obtendrá sus entradas y generará sus salidas en el subdirectorio **data**. Nota: con excepción de archivos de configuración u otros de tamaño reducido, el contenido de de este directorio no se mantiene en .git. 
+- Por ejemplo:
+  - Para preparación de datos se leen los datos originales de **data** y se crea un nuevo directorio con los datos transformados.
+  - Para inferencia se leen de **data** los archivos de imagen o video a procesar, pesos del modelo y configuraciones, y se generan en un nuevo directorio las salidas.
+- Se adopta la convención para desarrollo con docker de montar el directorio **data** para lectura y escritura. 
 
-Instrucciones
+## Guía rápida
+
+Clonar repositorio.
 
 ```bash
-export WORKSPACE_PATH=~/workspace/invap-fiuba-proyecto-final
+export WORKSPACE_PATH=~/workspace/ai-for-fisheries
 mkdir $WORKSPACE_PATH
+git clone --recursive https://github.com/nhorro/ai-for-fisheries.git $WORKSPACE_PATH
 cd $WORKSPACE_PATH
 ```
 
+Iniciar Jupyter.
+
+```bash
+cd $WORKSPACE_PATH
+docker run --rm -p 8888:8888 -p 6006:6006 -e GRANT_SUDO=yes -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/notebooks amaksimov/python_data_science jupyter notebook --NotebookApp.token='' --NotebookApp.password=''
+```
+
+Nota: este docker contiene Tensorboard en el puerto 6006. Considerar usar otro puerto si se usa en conjunto con dockers para entrenamiento.
+
+Realizar una inferencia con datos de prueba.
+
+Generar o visualizar un reporte en Jupyter
+
+
+
 ## Descripción de componentes
+
+### data
+
+Directorio para datasets, pesos, archivos grandes. 
+
+### Setup inicial
+
+Crear estructura de directorios.
+
+```bash
+cd $WORKSPACE_PATH
+mkdir data
+mkdir data/datasets
+mkdir data/inputs
+mkdir data/models
+mkdir data/media
+mkdir data/outputs
+```
 
 ### data-preparation
 
-### object-detector-trainer
+Cuadernos Jupyter Notebook/Python de preparación de datos.
 
-##### Descripción
+- **kaggle-fisheries**: preparación de datos para dataset de Kaggle (básica).
+- **fishnet**: preparación de datos para dataset de [fishnet.ai](https://www.fishnet.ai/).
+
+##### Entradas
+
+- Se descargan los datasets de las fuentes originales mediante scripts .sh, python u otros.
+- Para las fuentes no públicas se mantienen las claves de acceso en secrets.txt (no se sube a git).
+
+### object-detector-trainer
 
 Ambiente para entrenamiento de YOLOv4 basado en docker de [BMW Innovation Lab](https://github.com/BMW-InnovationLab/BMW-YOLOv4-Training-Automation).
 
@@ -91,9 +139,22 @@ sudo docker build -f docker/Dockerfile -t darknet_yolov4_gpu:1 --build-arg GPU=1
 
 ### object-detector
 
-Ver: 
+Contiene:
 
-Ambiente para inferencia con YOLOv4 basado en docker de [BMW Innovation Lab](https://github.com/BMW-InnovationLab/BMW-YOLOv4-Inference-API-GPU).
+- Ambientes para inferencia con YOLOv4 para procesamiento con CPU y GPU.
+- Implementación en python para evaluar desempeño del modelo (no usar para inferencia online). 
+
+Ver README en directorio para instrucciones de uso.
+
+##### Entradas
+
+- Modelo entrenado YOLOv4.
+- Archivos a procesar: video, imagen, o lote.
+
+##### Salidas
+
+- Video o imagen con detecciones.
+- Archivo de texto con detecciones para cada dato de entrada. Ver **reports** para generar reportes con el desempeño de modelos.
 
 ### object-tracker
 
@@ -103,10 +164,12 @@ TODO.
 
 TODO.
 
-### tests
+### reports
+
+Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de ensayos de los componentes y marco teórico.
 
 ### processing-pipelines
 
-
+Cadenas de procesamiento de partes de componentes o end-to-end para mostrar prototipo a cliente.
 
 ## Notas de desarrollo
