@@ -57,7 +57,7 @@ Convenciones:
 
 ## Guía rápida
 
-Clonar repositorio.
+### Clonar repositorio.
 
 ```bash
 export WORKSPACE_PATH=~/workspace/ai-for-fisheries
@@ -66,7 +66,7 @@ git clone --recursive https://github.com/nhorro/ai-for-fisheries.git $WORKSPACE_
 cd $WORKSPACE_PATH
 ```
 
-Iniciar Jupyter.
+### Iniciar Jupyter.
 
 ```bash
 cd $WORKSPACE_PATH
@@ -75,11 +75,50 @@ docker run --rm -p 8888:8888 -p 6006:6006 -e GRANT_SUDO=yes -e JUPYTER_ENABLE_LA
 
 Nota: este docker contiene Tensorboard en el puerto 6006. Considerar usar otro puerto si se usa en conjunto con dockers para entrenamiento.
 
-Realizar una inferencia con datos de prueba.
+### Realizar inferencias
 
-Generar o visualizar un reporte en Jupyter
+Iniciar docker en modo interactivo.
 
+```bash
+cd object-detector
+docker run --rm -it -v $WORKSPACE_PATH/data:/data \                    
+                    --workdir /work \
+                    nhorro/opencv4-python3-yolo4:cpu \
+                    /bin/bash
+```
 
+Procesar imagen.
+
+```bash
+python3 detect.py --input /data/test/fisheries-test.jpeg \
+                  --model-weights="/data/models/fisheries/yolov4.weights" \
+                  --model-cfg="/data/models/fisheries/yolov4.cfg" \
+                  --classes-txt="/data/models/fisheries/classes.txt"
+```
+
+Procesar video.
+
+```bash
+python3 detect.py --input /data/test/fisheries-test.mp4 \
+                  --model-weights="/data/models/coco/yolov4.weights" \
+                  --model-cfg="/data/models/coco/yolov4.cfg" \
+                  --classes-txt="/data/models/classes.txt"
+```
+
+Procesar lote.
+
+```bash
+python3 detect.py --input /data/test/fisheries-test.txt \
+                  --model-weights="/data/models/coco/yolov4.weights" \
+                  --model-cfg="/data/models/coco/yolov4.cfg" \
+                  --classes-txt="/data/models/classes.txt"
+```
+
+### Generar o visualizar un reporte en Jupyter
+
+```bash
+#FIXME
+```
 
 ## Descripción de componentes
 
@@ -137,14 +176,16 @@ sudo docker build -f docker/Dockerfile -t darknet_yolov4_gpu:1 --build-arg GPU=1
 
 ##### Observaciones
 
+- Luego de muchas horas corta con mAP 0.1% sin informar error.
+
 ### object-detector
 
 Contiene:
 
-- Ambientes para inferencia con YOLOv4 para procesamiento con CPU y GPU.
+- Ambientes para inferencia con YOLOv4 para procesamiento con CPU y GPU. Publicados en [dockerhub](https://hub.docker.com/repository/docker/nhorro/opencv4-python3-yolo4).
 - Implementación en python para evaluar desempeño del modelo (no usar para inferencia online). 
 
-Ver README en directorio para instrucciones de uso.
+Ver [README en directorio del componente](object-detector/README.md]) para información detallada e instrucciones de uso.
 
 ##### Entradas
 
@@ -166,10 +207,16 @@ TODO.
 
 ### reports
 
-Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de ensayos de los componentes y marco teórico.
+Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de ensayos de los componentes y marco teórico. Algunos de los más importantes:
+
+- [Reporte de evaluación de modelos de detector](reports/object-detector-models-report.ipynb): contiene resultados de ensayos con modelos de detectores.
 
 ### processing-pipelines
 
 Cadenas de procesamiento de partes de componentes o end-to-end para mostrar prototipo a cliente.
+
+```bash
+#WIP
+```
 
 ## Notas de desarrollo
