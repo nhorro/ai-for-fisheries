@@ -2,6 +2,8 @@ import argparse
 import cv2
 import time
 import os
+from glob import glob
+from pathlib import Path
 
 class YOLODetector:
     CONFIDENCE_THRESHOLD = 0.6
@@ -24,13 +26,20 @@ class YOLODetector:
         classes, scores, boxes = self.model.detect(img, self.CONFIDENCE_THRESHOLD, self.NMS_THRESHOLD)
         return classes, scores, boxes
 
-    def draw_bounding_boxes(self,img,classes, scores, boxes):
+    def draw_bounding_boxes(self,img, classes, scores, boxes):
         for (classid, score, box) in zip(classes, scores, boxes):
             color = self.COLORS[int(classid) % len(self.COLORS)]
             label = "%s : %f" % (self.class_names[classid[0]], score)
             cv2.rectangle(img, box, color, 2)
             cv2.putText(img, label, (box[0], box[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
+    def get_bounding_boxes_str(self,classes, scores, boxes):
+        tmp = ""
+        for (classid, score, box) in zip(classes, scores, boxes):
+            tmp += "%d %.3f %.3f %.3f %.3f %.3f\n" % (
+                classid[0], boxes[0], boxes[1], boxes[2], boxes[3], score
+            )
+        return tmp
 
 def process_image(filename,detector,args):
     print("Processing image %s" % filename)
@@ -42,21 +51,36 @@ def process_image(filename,detector,args):
     classes, scores, boxes = detector.detect(img)
     detector.draw_bounding_boxes(img,classes, scores, boxes)
 
+    print("Total detections: %d" % len(classes))
+
     # Save image with detections
-    img_base_name = os.path.splitext(args.input)[0]
-    img_pred_filename = img_base_name+"-pred.jpg"    
+    img_base_name = os.path.splitext(os.path.basename(args.input))[0]
+    img_pred_filename = args.output+"/"+img_base_name+"-pred.jpg"
     cv2.imwrite(img_pred_filename, img)
     print("Saved image with predictions to %s" % img_pred_filename)
 
-    # Save txt with bounding-boxes
-
+    # Save txt with bounding-boxes    
+    txt_pred_filename = args.output+"/"+img_base_name+"-pred.txt"
+    with open(txt_pred_filename,"wt") as fp:
+        txt = detector.get_bounding_boxes_str(classes, scores, boxes)        
+        fp.write(txt)
+    print("Saved txt with predictions to %s" % txt_pred_filename)        
     return
 
 def process_batch(filename,detector,args):    
+    # Get file list
+    # FIXME
+    files = []
 
-    # For each image
-
-    # Release detector
+    # Process each input
+    for x in files:        
+        input_ext = os.path.splitext(x)[1]
+        input_type = get_input_type(input_ext)
+        if "unsupported" != input_type:
+            process_input(input_type, x,detector,args)
+        else:
+            print("Unsupported input type.")
+            exit()
 
     return
 
@@ -79,10 +103,8 @@ def process_video(filename,detector,args):
     if args.max_frames != None:
         max_frames = args.max_frames
         
-    
-
     # Create videowriter
-    video_base_name = os.path.splitext(args.input)[0]
+    video_base_name = os.path.splitext(os.path.basename(args.input))[0]
     video_pred_filename = video_base_name+"-pred.mp4"
 
     fourcc = cv2.VideoWriter_fourcc('H', '2', '6', '4')
@@ -138,12 +160,34 @@ def process_input(input_type, filename,detector,args):
         "video": process_video,
         "batch": process_batch
     }
-
     return processors[input_type](filename,detector,args)
+
+def scan_for_model_files(model_path):
+    print("Looking for model files in %s" % model_path)
+    candidates = glob("%s/*.txt" % args.model)
+    classes_txt = candidates[0] if len(candidates) >= 1 else None
+    print("Classes: %s" % classes_txt)
+
+    candidates = glob("%s/*.weights" % model_path)
+    model_weights = candidates[0] if len(candidates) >= 1 else None
+    print("Weights: %s" % model_weights)
+
+    candidates = glob("%s/*.cfg" % model_path)
+    model_cfg = candidates[0] if len(candidates) >= 1 else None
+    print("Config: %s" % model_cfg)
+
+    assert(classes_txt and model_weights and model_cfg)
+    return model_weights,model_cfg,classes_txt
+
+def test(args):
+    print("Test")    
+    exit()
     
 if __name__=="__main__":     
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--input', type=str, help='Single image, image batch, or video batch')
+    parser.add_argument('--output', type=str, help='Output path',default="output")
+    parser.add_argument('--model', type=str, help='Darknet model path',default=None)
     parser.add_argument('--model-weights', type=str, help='Darknet model weights')
     parser.add_argument('--model-cfg', type=str, help='Darknet model configuration')
     parser.add_argument('--classes-txt', type=str, help='Darknet txt file with class names')
@@ -151,15 +195,27 @@ if __name__=="__main__":
     parser.add_argument('--max-frames', type=int, help='Max frames (for video input)',default=None)
     args = parser.parse_args()
 
+    #test(args)
+
     if not args.input:
         print("No input was specified.")
         exit()
 
     # Instance detector
-    detector = YOLODetector(args.model_weights,args.model_cfg,args.classes_txt)
+    if args.model is not None:
+        model_weights,model_cfg,model_classes_txt = scan_for_model_files(args.model )
+    else:
+        model_weights,model_cfg,model_classes_txt = args.model_weights,args.model_cfg,args.classes_txt
+
+    detector = YOLODetector(model_weights,model_cfg,model_classes_txt)
     if not detector:
         print("Could not instance detector.")
-        exit()
+        exit()    
+    
+    # Output path
+    if not os.path.exists(args.output):
+        output_path = Path(args.output)
+        output_path.mkdir(parents=True)
 
     # Process input
     input_ext = os.path.splitext(args.input)[1]
@@ -169,7 +225,3 @@ if __name__=="__main__":
     else:
         print("Unsupported input type.")
         exit()
-
-# Examples
-# python3 detect.py --input data/fisheries1.jpeg --model-weights="./coco/yolov4.weights" --model-cfg="./coco/yolov4.cfg" --classes-txt="./coco/classes.txt"
-# python3 detect.py --input data/fisheries1.jpeg --model-weights="./fisheries/yolov4.weights" --model-cfg="./fisheries/yolov4.cfg" --classes-txt="./fisheries/classes.txt"

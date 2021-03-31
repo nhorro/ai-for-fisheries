@@ -1,4 +1,3 @@
-data
 *.tar.gz
 .ipynb_checkpoints
 secrets.txt

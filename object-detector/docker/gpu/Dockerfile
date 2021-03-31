@@ -42,6 +42,6 @@ RUN mkdir -p build && cd build \
   				   -DBUILD_PERF_TESTS=OFF \
   				   -DBUILD_EXAMPLES=OFF \
   				   -DBUILD_opencv_apps=OFF \
-	 	  && make -j4 \
+	 	  && make \
 	 	  && make install \
 	 	  && ldconfig

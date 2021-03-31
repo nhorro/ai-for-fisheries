@@ -1,0 +1,3 @@
+#!/bin/sh
+export WORKSPACE_PATH=$PWD
+echo WORKSPACE_PATH is $WORKSPACE_PATH

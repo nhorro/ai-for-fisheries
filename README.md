@@ -1,10 +1,10 @@
 # IA para pesca
 
-Este proyecto consiste en la utilización de IA para monitoreo de actividades a bordo de buques pesqueros. Se integran componentes que se mantienen en repositorios separados, para formar una cadena completa de procesamiento.
+Este proyecto consiste en la utilización de IA para análisis de actividades en videos de CCTV a bordo de buques pesqueros. Se integran componentes que se mantienen en repositorios separados, para formar una cadena completa de procesamiento.
 
 ![diagrama_bloques](assets/diagrama_bloques.png)
 
-Este documento describe la organización de directorios para el desarrollo y ensayo de componentes utilizados. El objetivo es poder replicar un ambiente de trabajo en distintas PCs reduciendo al mínimo posible los pasos de configuración. El flujo de trabajo propuesto es para prototipado.
+Se describe la organización de directorios para el desarrollo y ensayo de componentes utilizados. El objetivo es poder replicar un ambiente de trabajo en distintas PCs reduciendo al mínimo posible los pasos de configuración. El flujo de trabajo propuesto es para prototipado.
 
 ## Contenido
 
@@ -18,14 +18,14 @@ Este documento describe la organización de directorios para el desarrollo y ens
 
 Componentes:
 
-| Componente              | Entrada                                            | Salida                                                       | Descripción                                      |
-| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
-| data-preparation        | directorio con dataset                             | directorio o .tar.gz con dataset organizado según lo requerido por el detector y por el object-tracker. | Scripts de preparación de datos.                 |
-| object-detector-trainer | dataset preprocesado                               | Pesos de YOLOv4 en formato Darknet. Opcional: conversión a otros formatos. | Entrenador del modelo de detección.              |
-| object-detector         |                                                    |                                                              | Componente para realizar detecciones con YOLOv4. |
-| object-tracker          | ???                                                |                                                              |                                                  |
-| object-tracker-trainer  | ???                                                |                                                              |                                                  |
-| processing-pipelines    | - Imágenes/videos a procesar.<br/>- Configuración. | Reporte de detecciones.                                      |                                                  |
+| Componente              | Entrada                                            | Salida                                                       | Descripción                                         |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| data-preparation        | directorio con dataset                             | directorio o .tar.gz con dataset organizado según lo requerido por el detector y por el object-tracker. | Scripts de preparación de datos.                    |
+| object-detector-trainer | dataset preprocesado                               | Pesos de YOLOv4 en formato Darknet. Opcional: conversión a otros formatos. | Entrenador del modelo de detección.                 |
+| object-detector         | - imagen/video<br />- modelo entreneado            | - imagen/video de entrada con anotaciones.<br />- detecciones (en formato de texto o como objeto para trasladar a otro componente) | Componente para realizar detecciones con YOLOv4. El |
+| object-tracker          | ???                                                |                                                              |                                                     |
+| object-tracker-trainer  | ???                                                |                                                              |                                                     |
+| processing-pipelines    | - Imágenes/videos a procesar.<br/>- Configuración. | Reporte de detecciones.                                      |                                                     |
 
 Para cada componente se mantiene un repositorio en github separado.
 
@@ -57,7 +57,7 @@ Convenciones:
 
 ## Guía rápida
 
-### Clonar repositorio.
+### Clonar repositorio
 
 ```bash
 export WORKSPACE_PATH=~/workspace/ai-for-fisheries
@@ -66,7 +66,14 @@ git clone --recursive https://github.com/nhorro/ai-for-fisheries.git $WORKSPACE_
 cd $WORKSPACE_PATH
 ```
 
-### Iniciar Jupyter.
+### Establecer variables de ambiente
+
+```bash
+cd $WORKSPACE_PATH
+source env.sh 
+```
+
+### Iniciar Jupyter
 
 ```bash
 cd $WORKSPACE_PATH
@@ -80,44 +87,36 @@ Nota: este docker contiene Tensorboard en el puerto 6006. Considerar usar otro p
 Iniciar docker en modo interactivo.
 
 ```bash
-cd object-detector
-docker run --rm -it -v $WORKSPACE_PATH/data:/data \                    
-                    --workdir /work \
-                    nhorro/opencv4-python3-yolo4:cpu \
-                    /bin/bash
+cd $WORKSPACE_PATH/object-detector
+docker run --rm -it -v $WORKSPACE_PATH/data:/data \
+	-v $PWD:/work \
+	--workdir /work \
+	nhorro/opencv4-python3-yolo4:cpu-latest \
+	/bin/bash
 ```
 
 Procesar imagen.
 
 ```bash
-python3 detect.py --input /data/test/fisheries-test.jpeg \
-                  --model-weights="/data/models/fisheries/yolov4.weights" \
-                  --model-cfg="/data/models/fisheries/yolov4.cfg" \
-                  --classes-txt="/data/models/fisheries/classes.txt"
+python3 detect.py --input=/data/evaluation/test_data/test.jpg \
+	--model=/data/models/kaggle_fisheries/ \
+	--output=/data/evaluation/results/fisheries
 ```
 
 Procesar video.
 
 ```bash
-python3 detect.py --input /data/test/fisheries-test.mp4 \
-                  --model-weights="/data/models/coco/yolov4.weights" \
-                  --model-cfg="/data/models/coco/yolov4.cfg" \
-                  --classes-txt="/data/models/classes.txt"
+python3 detect.py --input=/data/evaluation/test_data/test.jpg \
+	--model=/data/models/kaggle_fisheries/ \
+	--output=/data/evaluation/results/fisheries
 ```
 
 Procesar lote.
 
 ```bash
-python3 detect.py --input /data/test/fisheries-test.txt \
-                  --model-weights="/data/models/coco/yolov4.weights" \
-                  --model-cfg="/data/models/coco/yolov4.cfg" \
-                  --classes-txt="/data/models/classes.txt"
-```
-
-### Generar o visualizar un reporte en Jupyter
-
-```bash
-#FIXME
+python3 detect.py --input=/data/evaluation/test_data/test.txt \
+	--model=/data/models/kaggle_fisheries/ \
+	--output=/data/evaluation/results/fisheries
 ```
 
 ## Descripción de componentes
@@ -210,6 +209,7 @@ TODO.
 Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de ensayos de los componentes y marco teórico. Algunos de los más importantes:
 
 - [Reporte de evaluación de modelos de detector](reports/object-detector-models-report.ipynb): contiene resultados de ensayos con modelos de detectores.
+- [Reporte de evaluación de modelos de seguimiento)](reports/object-tracker-models-report.ipynb): contiene resultados de ensayos con modelos de seguimiento.
 
 ### processing-pipelines
 
@@ -218,5 +218,7 @@ Cadenas de procesamiento de partes de componentes o end-to-end para mostrar prot
 ```bash
 #WIP
 ```
+
+## Bibliografía y referencias de interés
 
 ## Notas de desarrollo
