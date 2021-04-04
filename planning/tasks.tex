@@ -1,0 +1,23 @@
+\begin{tabular}{lllrlll}
+\toprule
+{} &                                               name &                      start &  duration &                      depends\_of &              resources & task\_id \\
+\midrule
+0  &       Lectura y relevamiento. Capacitación general & 2021-03-31 21:08:31.064366 &        40 &                              [] &            [developer] &    ID01 \\
+1  &         Bloque de recepción de video. Codificación &                        NaT &        40 &                              [] &            [developer] &    ID02 \\
+2  &  Bloque de recepción de video. Calibración y co... &                        NaT &        60 &                          [ID02] &            [developer] &    ID03 \\
+3  &  Bloque de detección.Desarrollo/entrenamiento d... &                        NaT &        60 &                          [ID02] &       [developer, gpu] &    ID04 \\
+4  &      Bloque de detección. Integración con DeepSORT &                        NaT &        60 &                          [ID04] &       [developer, gpu] &    ID05 \\
+5  &                   Bloque de detección.Filtro final &                        NaT &        40 &                          [ID05] &            [developer] &    ID06 \\
+6  &  Bloque de registro y generación de reportes. I... &                        NaT &        60 &                          [ID06] &            [developer] &    ID07 \\
+7  &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        20 &                          [ID06] &            [developer] &    ID08 \\
+8  &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        20 &                          [ID06] &            [developer] &    ID09 \\
+9  &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        20 &                          [ID06] &            [developer] &    ID10 \\
+10 &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        20 &                          [ID06] &            [developer] &    ID11 \\
+11 &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        30 &                          [ID06] &       [developer, gpu] &    ID12 \\
+12 &  Iteraciones de desarrollo y mejora de modelos ... &                        NaT &        30 &                          [ID06] &            [developer] &    ID13 \\
+13 &                      Integración. Despliegue en PC &                        NaT &        30 &  [ID09, ID10, ID11, ID12, ID13] &       [developer, gpu] &    ID14 \\
+14 &  Integración. Despliegue en Edge/NVIDIA Jetson/... &                        NaT &        30 &                          [ID14] &  [developer, edge-gpu] &    ID15 \\
+15 &          Documentación. Documentación del producto &                        NaT &        30 &                          [ID15] &            [developer] &    ID16 \\
+16 &                            Documentación. Memorias &                        NaT &        30 &                          [ID16] &            [developer] &    ID17 \\
+\bottomrule
+\end{tabular}

@@ -1,4 +1,6 @@
+tmp
 *.tar.gz
 .ipynb_checkpoints
 secrets.txt
 kaggle.json
+data/datasets

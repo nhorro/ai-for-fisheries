@@ -16,7 +16,6 @@ class YOLODetector:
         self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA_FP16)
         self.model = cv2.dnn_DetectionModel(self.net)
         self.model.setInputParams(size=(416, 416), scale=1/255, swapRB=True)
-
             
         self.class_names = []
         with open(classes_filename, "r") as f:
@@ -37,7 +36,7 @@ class YOLODetector:
         tmp = ""
         for (classid, score, box) in zip(classes, scores, boxes):
             tmp += "%d %.3f %.3f %.3f %.3f %.3f\n" % (
-                classid[0], boxes[0], boxes[1], boxes[2], boxes[3], score
+                classid[0], box[0], box[1], box[2], box[3], score
             )
         return tmp
 
