@@ -1,5 +1,5 @@
 classes = 7
-train  = /content/fisheries/train.txt
-valid  = /content/fisheries/test.txt
-names = /content/fisheries/obj.names
-backup = /content/fisheries/backup/
+train  = /training/train.txt
+valid  = /training/test.txt
+names = /training/obj.names
+backup = /training/backup/
