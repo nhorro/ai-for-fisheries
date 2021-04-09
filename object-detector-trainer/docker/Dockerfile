@@ -15,7 +15,7 @@ RUN apt-get update && \
 	autoconf automake libtool libopencv-dev build-essential
 
 # Install python-dev and pip
-RUN apt-get update && apt-get install -y python3-pip python3.6-dev
+RUN apt-get update && apt-get install -y python3-pip python3.7-dev
 
 # Install all needed python librarires 
 COPY ./requirements.txt .
