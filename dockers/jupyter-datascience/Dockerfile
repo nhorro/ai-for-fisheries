@@ -1,0 +1,9 @@
+FROM amaksimov/python_data_science
+
+ARG $USERID
+ARG $USERGROUP
+ARG $USERNAME
+
+USER $USERID
+
+CMD
