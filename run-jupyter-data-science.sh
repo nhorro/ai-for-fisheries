@@ -1,1 +1,1 @@
-docker run -d --rm -p 8888:8888 -p 6006:6006 -e GRANT_SUDO=yes -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/notebooks amaksimov/python_data_science jupyter notebook --NotebookApp.token='' --NotebookApp.password=''
+docker run -d --rm --user=$UID -p 8888:8888 -p 6006:6006 -e GRANT_SUDO=yes -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/notebooks amaksimov/python_data_science jupyter notebook --NotebookApp.token='' --NotebookApp.password=''

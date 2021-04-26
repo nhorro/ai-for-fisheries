@@ -23,9 +23,7 @@ Componentes:
 | data-preparation        | directorio con dataset                             | directorio o .tar.gz con dataset organizado según lo requerido por el detector y por el object-tracker. | Scripts de preparación de datos.                    |
 | object-detector-trainer | dataset preprocesado                               | Pesos de YOLOv4 en formato Darknet. Opcional: conversión a otros formatos. | Entrenador del modelo de detección.                 |
 | object-detector         | - imagen/video<br />- modelo entreneado            | - imagen/video de entrada con anotaciones.<br />- detecciones (en formato de texto o como objeto para trasladar a otro componente) | Componente para realizar detecciones con YOLOv4. El |
-| object-tracker          | ???                                                |                                                              |                                                     |
-| object-tracker-trainer  | ???                                                |                                                              |                                                     |
-| processing-pipelines    | - Imágenes/videos a procesar.<br/>- Configuración. | Reporte de detecciones.                                      |                                                     |
+| videoanalytics          | - Imágenes/videos a procesar.<br/>- Configuración. | Reporte de detecciones.                                      | Cadenas de procesamiento para video analítico.      |
 
 Para cada componente se mantiene un repositorio en github separado.
 
@@ -41,7 +39,7 @@ $WORKSPACE_PATH
 	|-object-tracker
 	|-object-tracker-trainer
 	|-reports
-	|-processing-pipelines	
+	|-videoanalytics	
 	|-tmp
 	README.md
 ```
@@ -196,14 +194,6 @@ Ver [README en directorio del componente](object-detector/README.md]) para infor
 - Video o imagen con detecciones.
 - Archivo de texto con detecciones para cada dato de entrada. Ver **reports** para generar reportes con el desempeño de modelos.
 
-### object-tracker
-
-TODO.
-
-### object-tracker-trainer
-
-TODO.
-
 ### reports
 
 Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de ensayos de los componentes y marco teórico. Algunos de los más importantes:
@@ -211,13 +201,11 @@ Reportes en formato de cuadernos Jupyter Notebook con análisis y resultados de 
 - [Reporte de evaluación de modelos de detector](reports/object-detector-models-report.ipynb): contiene resultados de ensayos con modelos de detectores.
 - [Reporte de evaluación de modelos de seguimiento)](reports/object-tracker-models-report.ipynb): contiene resultados de ensayos con modelos de seguimiento.
 
-### processing-pipelines
+### videoanalytics
 
 Cadenas de procesamiento de partes de componentes o end-to-end para mostrar prototipo a cliente.
 
-```bash
-#WIP
-```
+Ver [readme en directorio del componente](videoanalytics/README.md)
 
 ## Bibliografía y referencias de interés
 
