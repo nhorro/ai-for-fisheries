@@ -22,7 +22,7 @@ class ROIView(Sink):
 
         for i,v in enumerate(self.rois):
             self.rois[i]["polygon"] = np.int32([self.rois[i]["polygon"]])
-            print(self.rois[i]["polygon"])
+            #print(self.rois[i]["polygon"])
    
     def setup(self):        
         self.frame_counter = self.context["START_FRAME"]
@@ -76,10 +76,11 @@ class ROIObjTest(Sink):
                 point = Point(x, y)
                 self.context["FRAME"] = cv2.circle( self.context["FRAME"], (int(x),int(y)) , 5, (255,0,0))
                 if r["polygon"].contains(point):
-                    print("Objeto adentro de {}".format(r["name"]))
+                    #print("Objeto adentro de {}".format(r["name"]))
                     r["activity"] += 1
-            if r["activity"] > 0:
-                self.context["FRAME"] = cv2.polylines( self.context["FRAME"] , r["polygon_i32"] , 10, (255,0,0))
+            #if r["activity"] > 0:
+            #    self.context["FRAME"] = cv2.polylines( self.context["FRAME"] , r["polygon_i32"] , 5, (0,0,255))
+                
             
         self.frame_counter+=1
     
