@@ -78,6 +78,10 @@ class ROIObjTest(Sink):
                 if r["polygon"].contains(point):
                     #print("Objeto adentro de {}".format(r["name"]))
                     r["activity"] += 1
+
+                # Publicar variable
+                self.context["q_{}".format(r["name"])]=r["activity"] 
+
             #if r["activity"] > 0:
             #    self.context["FRAME"] = cv2.polylines( self.context["FRAME"] , r["polygon_i32"] , 5, (0,0,255))
                 

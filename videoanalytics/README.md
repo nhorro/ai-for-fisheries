@@ -56,3 +56,9 @@ Exportación de ambiente conda:
 ~~~bash
 conda env export --name yolov4-gpu > videoanalytics-gpu.yml
 ~~~
+
+## Generar documentación
+
+~~~bash
+make
+~~~

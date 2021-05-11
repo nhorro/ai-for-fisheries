@@ -1,0 +1,103 @@
+version: '3.7'
+
+services:
+  #----------------------------------------------------------------------------------------
+  #elasticsearch:
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+  #  ports:
+  #      - target: 9200
+  #        published: 9200
+  #        protocol: tcp
+  #      - target: 9300
+  #        published: 9300
+  #        protocol: tcp
+  #  environment:           
+  #      discovery.type: single-node
+  #  ulimits:
+  #      memlock:
+  #          soft: -1
+  #          hard: -1
+  #  volumes:
+  #      - type: volume
+  #        source: elasticsearch.data
+  #        target: /usr/share/elasticsearch/data
+  #  networks:
+  #    - mynetwork
+
+  #kibana:
+  #  depends_on:
+  #      - elasticsearch
+  #  image: docker.elastic.co/kibana/kibana:7.9.1
+  #  ports:
+  #      - target: 5601
+  #        published: 5601
+  #        protocol: tcp
+  #  volumes:
+  #      - type: volume
+  #        source: kibana.data
+  #        target: /usr/share/kibana/data
+  #  environment:
+  #      SERVER_NAME: kibana
+  #      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+  #  networks:
+  #    - mynetwork        
+
+  influxdb:
+    build:
+        context: ./influxdb
+    volumes:
+         - type: volume
+           source: influxdb.data
+           target: /var/lib/influxdb
+    ports:
+         - "8086:8086/tcp"
+    networks:
+      - mynetwork            
+
+  grafana:
+    build:
+      context: ./grafana
+    volumes:
+      - type: bind
+        source: ./grafana/dashboards/
+        target: /dashboards
+      - type: volume
+        source: grafana.data
+        target: /var/lib/grafana
+      - type: volume
+        source: grafana.log
+        target: /var/log/grafana
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+    networks:
+      - mynetwork   
+
+  #
+  #videoservice:
+  #  build:
+  #    context: ./video
+  #  ports:
+  #    - target: 10001
+  #      published: 10001
+  #      protocol: tcp
+  #  volumes:
+  #    - type: bind
+  #      source: ../models
+  #      target: /models        
+  #  #environment:
+  #      #PRODUCTION_MODEL_FILENAME: "production.pkl"
+  #  networks:
+  #    - mynetwork      
+
+networks:
+  mynetwork:
+    driver: bridge        
+
+volumes:
+    elasticsearch.data:    
+    grafana.data:    
+    grafana.log:
+    kibana.data:
+    influxdb.data:

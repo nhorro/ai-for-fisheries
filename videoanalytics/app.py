@@ -14,6 +14,17 @@ from videoanalytics.pipeline.sinks.yolo4_detector import YOLOv4Detector
 from videoanalytics.pipeline.sinks.obj_detector import DetectionsAnnotator, DetectionsCSVWriter, \
                                                        ObjectDetectorCSV
 from videoanalytics.pipeline.sinks.roi import ROIView, ROIObjTest
+from videoanalytics.pipeline.sinks.trackers.sort import SORT
+
+
+from videoanalytics.pipeline.sinks.zmqpub import ZMQPub
+from videoanalytics.pipeline.sinks.resizer import Resizer
+from videoanalytics.pipeline.sinks.influxdb import InfluxDBWriter
+
+
+
+# Configuration
+# -----------------------------------------------------------------------------
 
 # Input
 INPUT_VIDEO = "../data/media/barco.mp4"
@@ -31,6 +42,13 @@ OUTPUT_VIDEO = "../data/media/prueba-rois.mp4"
 
 # ROIS
 ROIS_FILENAME = "../data/other/rois.json"
+
+# Components under development
+# -----------------------------------------------------------------------------
+
+
+# Pipeline definition
+# -----------------------------------------------------------------------------
 
 # 1. Crear el contexto en el que los bloques comparten información
 g_context = {}
@@ -51,6 +69,10 @@ def create_pipeline(context):
         ( "detector", {
           "component": ObjectDetectorCSV(context,CSV_DETECTIONS_FILENAME)
         }),
+
+        ( "tracker", {
+            "component": SORT(context, max_age=200, min_hits=3, iou_threshold=0.3)
+        }),
         
         ( "detector-annot", {
           "component": DetectionsAnnotator(context,class_names_filename=DETECTOR_CLASSES_FILENAME)
@@ -65,9 +87,20 @@ def create_pipeline(context):
           "component": ROIObjTest(context,filename=ROIS_FILENAME)
         }),   
         
-        
-        ( "writer", {
-          "component": VideoWriter(context,filename=OUTPUT_VIDEO)
+        #( "writer", {
+        #  "component": VideoWriter(context,filename=OUTPUT_VIDEO)
+        #})
+
+        ( "influxdb", {
+            "component": InfluxDBWriter(context,variables_to_publish=[
+                "q_izquierda",
+                "q_derecha",
+                "q_timon",
+            ])
+        } ),
+
+        ( "zmqpub", {
+          "component": ZMQPub(context,endpoint="tcp://127.0.0.1:5600")
         })
     ])
 
@@ -75,8 +108,12 @@ def create_pipeline(context):
     pipeline.add_edges_from([
         ("input", "detector"), 
         ("detector", "detector-annot"),
-        ("detector-annot", "roi-annot"),
-        ("detector-annot", "roi-test")
+        ("detector", "tracker"),
+        ("detector", "roi-annot"),
+        ("roi-annot", "roi-test"),
+        #("detector-annot", "resizer"),
+        ("detector-annot", "influxdb"),
+        #("resizer", "zmqpub")
         #("detector-annot", "writer")
     ])
 
@@ -84,6 +121,9 @@ def create_pipeline(context):
     pipeline.remove_nodes_from(list(nx.isolates(pipeline)))
     return pipeline
 
+
+# Edición de ROIs (proviosorio)
+# -----------------------------------------------------------------------------
 
 g_roi = []
 
@@ -129,8 +169,6 @@ def mouse_click(event, x, y,
 def process_pipeline_ui(p,context):
     global g_roi
 
-
-
     seq = [p.nodes[x]['component'] for x in list(nx.topological_sort(p))]
     sources = [x for x in filter(lambda x: issubclass(type(x),Source),seq)]
     sinks = [x for x in filter(lambda x: issubclass(type(x),Sink),seq)]
@@ -149,7 +187,7 @@ def process_pipeline_ui(p,context):
 
 
     # GUI CALLBACKS
-    cv2.namedWindow('Video')
+    cv2.namedWindow('Video', cv2.WINDOW_NORMAL)   
     cv2.setMouseCallback("Video", mouse_click)
     
     while eof_not_reached:
