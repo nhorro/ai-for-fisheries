@@ -21,6 +21,8 @@ from videoanalytics.pipeline.sinks.zmqpub import ZMQPub
 from videoanalytics.pipeline.sinks.resizer import Resizer
 from videoanalytics.pipeline.sinks.influxdb import InfluxDBWriter
 
+from videoanalytics.pipeline.sinks.background import BackgroundExtractor1, BackgroundExtractor2
+
 
 
 # Configuration
@@ -28,7 +30,11 @@ from videoanalytics.pipeline.sinks.influxdb import InfluxDBWriter
 
 # Input
 INPUT_VIDEO = "../data/media/barco.mp4"
-START_FRAME = 0
+#START_FRAME = 0
+
+START_FRAME = 9000 # Redes
+#START_FRAME = 10000 # Redes
+
 MAX_FRAMES = None
 
 # Detector
@@ -53,7 +59,9 @@ ROIS_FILENAME = "../data/other/rois.json"
 # 1. Crear el contexto en el que los bloques comparten información
 g_context = {}
 
-def create_pipeline(context):
+
+
+def create_pipeline1(context):
     # 2. Instanciar la pipeline (grafo dirigido)
     pipeline = nx.DiGraph()
 
@@ -65,6 +73,39 @@ def create_pipeline(context):
                                      start_frame=START_FRAME,
                                      max_frames=MAX_FRAMES)
         }),
+        
+        ( "detector", {
+          "component": ObjectDetectorCSV(context,CSV_DETECTIONS_FILENAME)
+        }),
+
+    ])
+
+    # 4. Definir conexiones
+    pipeline.add_edges_from([
+        ("input", "detector")
+    ])
+
+    # 5. Eliminar bloques aislados
+    pipeline.remove_nodes_from(list(nx.isolates(pipeline)))
+    return pipeline
+
+def create_pipeline2(context):
+    # 2. Instanciar la pipeline (grafo dirigido)
+    pipeline = nx.DiGraph()
+
+    # 3. Agregar bloques
+    pipeline.add_nodes_from([
+        ( "input", {
+          "component": VideoReader(context,
+                                     video_path=INPUT_VIDEO,
+                                     start_frame=START_FRAME,
+                                     max_frames=MAX_FRAMES)
+        }),
+
+        ( "mog", {
+          "component": BackgroundExtractor1(context)
+        }),
+
         
         ( "detector", {
           "component": ObjectDetectorCSV(context,CSV_DETECTIONS_FILENAME)
@@ -93,9 +134,13 @@ def create_pipeline(context):
 
         ( "influxdb", {
             "component": InfluxDBWriter(context,variables_to_publish=[
-                "q_izquierda",
-                "q_derecha",
+                "q_izquierda_sup",
+                "q_izquierda_inf",
+                "q_derecha_sup",
+                "q_derecha_inf",
                 "q_timon",
+                "q_total",
+                "activity"
             ])
         } ),
 
@@ -106,13 +151,14 @@ def create_pipeline(context):
 
     # 4. Definir conexiones
     pipeline.add_edges_from([
-        ("input", "detector"), 
-        ("detector", "detector-annot"),
+        ("input", "mog"), 
+        ("mog", "detector"), 
+        #("detector", "detector-annot"),
         ("detector", "tracker"),
         ("detector", "roi-annot"),
         ("roi-annot", "roi-test"),
         #("detector-annot", "resizer"),
-        ("detector-annot", "influxdb"),
+        ("roi-test", "influxdb"),
         #("resizer", "zmqpub")
         #("detector-annot", "writer")
     ])
@@ -187,8 +233,9 @@ def process_pipeline_ui(p,context):
 
 
     # GUI CALLBACKS
-    cv2.namedWindow('Video', cv2.WINDOW_NORMAL)   
-    cv2.setMouseCallback("Video", mouse_click)
+    cv2.namedWindow('Principal', cv2.WINDOW_NORMAL)   
+    #cv2.namedWindow('Análisis', cv2.WINDOW_NORMAL)   
+    cv2.setMouseCallback("Principal", mouse_click)
     
     while eof_not_reached:
         for x in sinks:
@@ -203,12 +250,13 @@ def process_pipeline_ui(p,context):
             cv2.fillPoly(overlay, pts = converted_roi, color =(0,155,0))
             cv2.polylines(overlay, converted_roi, 5, (0,255,0))
 
-        alpha = 0.4  # Transparency factor.
-        # Following line overlays transparent rectangle over the image
-        context["FRAME"] = cv2.addWeighted(overlay, alpha, context["FRAME"], 1 - alpha, 0)
+            alpha = 0.4  # Transparency factor.
+            # Following line overlays transparent rectangle over the image
+            context["FRAME"] = cv2.addWeighted(overlay, alpha, context["FRAME"], 1 - alpha, 0)
 
 
-        cv2.imshow("Video", cv2.cvtColor(context["FRAME"], cv2.COLOR_BGR2RGB) )
+        cv2.imshow("Principal", cv2.cvtColor(context["FRAME"], cv2.COLOR_BGR2RGB) )
+        #cv2.imshow("Análisis", cv2.cvtColor(context["FRAME_TMP"], cv2.COLOR_BGR2RGB) )
         # END GUI CODE
             
         # Read next frame
@@ -229,6 +277,19 @@ def process_pipeline_ui(p,context):
             print(g_roi)
             #print(type(g_roi))
             #print(g_roi.shape)
+        elif key_pressed == ord('1'):
+            print("User command 1")
+            nx.get_node_attributes(pipeline, 'component')['roi-annot'].toggle_display_enable()
+        elif key_pressed == ord('2'):
+            print("User command 2")
+            nx.get_node_attributes(pipeline, 'component')['mog'].toggle_display_enable()
+        elif key_pressed == ord('3'):
+            print("User command 3")
+            nx.get_node_attributes(pipeline, 'component')['tracker'].toggle_display_enable()
+        elif key_pressed == ord('4'):
+            print("User command 4")
+        elif key_pressed == ord('5'):
+            print("User command 5")
             
     # Shutdown    
     print("Shutting down pipeline")
@@ -242,7 +303,7 @@ if __name__ == "__main__":
     
     print("Pipeline processor")
 
-    pipeline = create_pipeline(g_context)
+    pipeline = create_pipeline2(g_context)
 
     # Process pipeline
     process_pipeline_ui(pipeline,g_context)

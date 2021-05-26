@@ -329,25 +329,26 @@ class SORT(Sink):
             #print(obj_id,x,y,w,h)
             
         # ACOMODAR MEJOR DESPUÉS
-        fontScale = 1.0
-        image_h, image_w, _ = self.context["FRAME"].shape
-        bbox_color = (155,200,200)
-        for d in self.context["TRACKED_OBJS"]:
-            obj_id, x,y,w,h = int(d[0]), int(d[1]),int(d[2]),int(d[3]),int(d[4]),
-            #print(obj_id,x,y,w,h)
-            score = d[4]            
-            bbox_thick = int(0.6 * (image_h + image_w) / 400)
-            c1, c2 = (x, y), (x + w, y + h)
-            cv2.rectangle(self.context["FRAME"], c1, c2, bbox_color, bbox_thick)
-            bbox_mess = 'ID %03d' % obj_id            
-            t_size = cv2.getTextSize(bbox_mess, 0, fontScale, thickness=bbox_thick // 2)[0]
-            c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
-            cv2.rectangle(self.context["FRAME"], c1, 
-                          (np.float32(c3[0]), np.float32(c3[1])), bbox_color, -1) #filled
-            cv2.putText(self.context["FRAME"], bbox_mess, (c1[0], np.float32(c1[1] - 2)), 
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale, (0, 0, 0), bbox_thick // 2, lineType=cv2.LINE_AA)
-        
+        if self.display_enabled:
+            fontScale = 1.0
+            image_h, image_w, _ = self.context["FRAME"].shape
+            bbox_color = (155,200,200)
+            for d in self.context["TRACKED_OBJS"]:
+                obj_id, x,y,w,h = int(d[0]), int(d[1]),int(d[2]),int(d[3]),int(d[4]),
+                #print(obj_id,x,y,w,h)
+                score = d[4]            
+                bbox_thick = int(0.6 * (image_h + image_w) / 400)
+                c1, c2 = (x, y), (x + w, y + h)
+                cv2.rectangle(self.context["FRAME"], c1, c2, bbox_color, bbox_thick)
+                bbox_mess = 'ID %03d' % obj_id            
+                t_size = cv2.getTextSize(bbox_mess, 0, fontScale, thickness=bbox_thick // 2)[0]
+                c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
+                cv2.rectangle(self.context["FRAME"], c1, 
+                              (np.float32(c3[0]), np.float32(c3[1])), bbox_color, -1) #filled
+                cv2.putText(self.context["FRAME"], bbox_mess, (c1[0], np.float32(c1[1] - 2)), 
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale, (0, 0, 0), bbox_thick // 2, lineType=cv2.LINE_AA)
+            
         self.frame_counter+=1
         self.relative_frame_counter +=1
             

@@ -16,6 +16,7 @@ class InfluxDBWriter(Sink):
         self.client = InfluxDBClient(host=host, port=port, database=database)        
         self.counter = 0
         self.variables_to_publish = variables_to_publish
+
     def setup(self):
         pass
     

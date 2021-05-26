@@ -9,6 +9,7 @@ from videoanalytics.pipeline import Sink
 class Resizer(Sink):
     def __init__(self, context, output_w,output_h):
         super().__init__(context)
+        self.context = context
         self.output_w = output_w
         self.output_h = output_h
         

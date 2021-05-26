@@ -20,6 +20,7 @@ class Source(ABC):
 class Sink(ABC): 
     def __init__(self, context):
         self.context = context
+        self.display_enabled = True
         
     @abstractmethod
     def setup(self):
@@ -32,6 +33,14 @@ class Sink(ABC):
     @abstractmethod
     def shutdown(self):
         pass 
+
+    def enable_display(self,state):
+        self.display_enabled = new_state
+        pass         
+
+    def toggle_display_enable(self):
+        self.display_enabled = not self.display_enabled
+        pass            
 
 def process_pipeline(p,context):
     seq = [p.nodes[x]['component'] for x in list(nx.topological_sort(p))]

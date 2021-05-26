@@ -28,6 +28,9 @@ class VideoReader(Source):
         self.context["TOTAL_FRAMES"] = self.total_frames
         print("Start frame:", self.start_frame)
         print("Total frames frame:", self.total_frames)
+        
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame); 
+
         self.progress_bar = tqdm(total=self.total_frames)
    
     def setup(self):
