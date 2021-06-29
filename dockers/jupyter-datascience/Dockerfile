@@ -1,41 +1,27 @@
-FROM ubuntu:20.04
+FROM jupyter/tensorflow-notebook
+MAINTAINER Nicolás Eduardo Horro <nhorro@gmail.com>
 
-ARG user_id
-ARG group_id
-ARG user_name
+#ENV OPENCV_VERSION 3.0.0
 
 USER root
-
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
 	libopencv-dev \
-        python3-pip \
+    python3-pip \
 	python3-opencv && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install tensorflow && \
-    pip3 install numpy pandas sklearn matplotlib seaborn jupyter pyyaml h5py && \
-    pip3 install keras --no-deps && \
-    pip3 install opencv-python && \
-    pip3 install imutils
+# Install in the default python3 environment
+RUN pip install --quiet --no-cache-dir opencv-python imutils imgaug && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"    
 
 # Jupyter and Tensorboard ports
 EXPOSE 8888 6006
 
-# User no root
-RUN apt-get update --allow-releaseinfo-change -y  && \
-    apt-get clean -y  && \
-	apt-get install --fix-missing -y sudo && \
-    useradd -m $user_name && echo "$user_name:$user_name" | chpasswd    && \
-    adduser $user_name sudo    && \
-    echo "\n$user_name ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers  && \
-    chown -R $user_name:$user_name /home/$user_name
+# Back to the default directory
+WORKDIR /home/$NB_USER/work
 
-COPY conf/.jupyter /home/$user_name/.jupyter
-COPY run_jupyter.sh /home/$user_name/
-
-WORKDIR /home/$user_name
-USER $user_name
-
-CMD ["/home/$user_name/run_jupyter.sh"]
+# Switch back to notebook user
+USER $NB_USER
