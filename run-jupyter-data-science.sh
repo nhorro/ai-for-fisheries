@@ -5,5 +5,5 @@ docker run --rm \
 		   -e CHOWN_HOME=yes \
 		   -e CHOWN_HOME_OPTS='-R' \
 		   -v "${PWD}":/home/jovyan/work \
-		   jupyter-datascience:latest
+		   nhorro/jupyter-datascience:latest
 		   jupyter notebook --NotebookApp.token='' --NotebookApp.password=''
