@@ -1,1 +1,1 @@
-docker build -t jupyter-datascience .
+docker build --build-arg http_proxy -t jupyter-datascience .

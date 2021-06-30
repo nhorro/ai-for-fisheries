@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Install in the default python3 environment
-RUN pip install --quiet --no-cache-dir opencv-python imutils imgaug && \
+RUN pip install  --proxy=$http_proxy --quiet --no-cache-dir opencv-python imutils imgaug && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"    
 
