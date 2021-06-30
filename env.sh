@@ -1,4 +1,0 @@
-# Sets WORKSPACE_PATH
-#!/bin/sh
-export de entorno WORKSPACE_PATH=$PWD
-echo WORKSPACE_PATH is $WORKSPACE_PATH
