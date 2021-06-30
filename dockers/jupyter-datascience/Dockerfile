@@ -17,6 +17,9 @@ RUN pip install --quiet --no-cache-dir opencv-python imutils imgaug && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"    
 
+# Custom config
+COPY conf/.jupyter /home/$NB_USER/.jupyter
+
 # Jupyter and Tensorboard ports
 EXPOSE 8888 6006
 
