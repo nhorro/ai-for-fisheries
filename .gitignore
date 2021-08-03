@@ -4,5 +4,4 @@ draft
 .ipynb_checkpoints
 secrets.txt
 kaggle.json
-data/datasets
 *.pyc
