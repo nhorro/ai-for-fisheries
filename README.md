@@ -32,12 +32,31 @@ Se prone la siguiente organización de directorios.
 
 ```
 $WORKSPACE_PATH
-	|-data
-	|-data-preparation
-	|-object-detector-trainer
-	|-reports
-	|-videoanalytics	
-	|-tmp
+    ├── assets
+    ├── biblio
+    ├── compose
+    ├── data
+    │   ├── datasets
+    │   │   ├── kaggle-fisheries
+    │   │   └── kaggle-fisheries-yolo
+    │   │       ├── backup
+    │   │       └── data
+    │   ├── media
+    │   ├── models
+    │   │   ├── kaggle-fisheries-yolo
+    │   │   ├── kaggle-fisheries-yolo-tiny
+    │   │   ├── mirtar-yolo
+    │   │   ├── mirtar-yolo-tiny
+    │   └── other
+    ├── data-preparation
+    │   ├── kaggle-fisheries
+    │   └── mirtar
+    ├── dockers
+    │   ├── darknet-gpu
+    │   └── jupyter-datascience
+    │       └── conf
+    ├── model-development-and-training    
+    └── videoanalytics    
 	README.md
 ```
 
@@ -51,6 +70,13 @@ Convenciones:
 - Se adopta la convención para desarrollo con docker de montar el directorio **data** para lectura y escritura. 
 
 ## Guía rápida
+
+Actualizado 03/08/2021.
+Para trabajar en ambientes sin sudo, se reemplazan los dockers por un ambiente conda para todas las tareas de preparación de datos, desarrollo y entrenamiento de modelos. Se mantiene la convención de uso de data
+
+~~~bash
+conda env create -f ai-fisheries.yml
+~~~
 
 ### Clonar repositorio
 
@@ -68,11 +94,38 @@ cd $WORKSPACE_PATH
 source env.sh 
 ```
 
+Nota: todos los scripts asument que el directorio raíz es WORKSPACE_PATH.
+
 ### Iniciar Jupyter
+
+**Local (opción preferida)**:
+
+```bash
+conda activate ai-fisheries
+cd $WORKSPACE_PATH
+jupyter notebook --NotebookApp.ip='0.0.0.0' --NotebookApp.token='' --NotebookApp.password=''
+```
+
+ó
+
+```bash
+conda activate ai-fisheries
+./run-jupyter-local.sh
+```
+
+Docker (pendiente resolver problemas de permisos):
 
 ```bash
 cd $WORKSPACE_PATH
-docker run --rm -p 8888:8888 -p 6006:6006 -e GRANT_SUDO=yes -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/notebooks amaksimov/python_data_science jupyter notebook --NotebookApp.token='' --NotebookApp.password=''
+docker run --rm \
+           --user=$UID \
+           -p 10000:8888 \
+           -e JUPYTER_ENABLE_LAB=yes \
+           -e CHOWN_HOME=yes \
+           -e CHOWN_HOME_OPTS='-R' \
+           -v "${PWD}":/home/jovyan/work \
+           nhorro/jupyter-datascience:latest
+           jupyter notebook --NotebookApp.token='' --NotebookApp.password=''
 ```
 
 ó
@@ -124,7 +177,7 @@ python3 detect.py --input=/data/evaluation/test_data/test.txt \
 
 ### ./data
 
-Directorio para datasets, pesos, archivos grandes. 
+Directorio para datasets, pesos de modelos entrenados, archivos grandes. 
 
 #### Setup inicial
 
