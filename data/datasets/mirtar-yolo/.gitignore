@@ -1,2 +1,6 @@
 yolov4.conv.137
-training-log.txt
+yolov4-tiny.conv.29
+*training-log.txt
+data
+backup
+
