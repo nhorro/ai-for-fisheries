@@ -2,4 +2,7 @@ yolov4.conv.137
 yolov4-tiny.conv.29
 data
 backup
-*training-log.txt
+*.swp
+*-perf-report.txt
+
+
