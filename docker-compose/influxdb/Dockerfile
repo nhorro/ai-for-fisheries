@@ -1,4 +1,4 @@
-FROM influxdb:1.7-alpine
+FROM influxdb:1.8-alpine
 
 ENV INFLUXDB_REPORTING_DISABLED false
 ENV INFLUXDB_LOGGING_LEVEL info

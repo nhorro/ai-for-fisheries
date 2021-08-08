@@ -1,0 +1,3 @@
+[submodule "videoanalytics"]
+	path = videoanalytics
+	url = https://github.com/nhorro/videoanalytics

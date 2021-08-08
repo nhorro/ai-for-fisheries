@@ -16,9 +16,9 @@ Cada directorio representa una etapa, tarea que requiere scripts, reporte o comp
 
 ## Organización del proyecto
 
-Se reconocen las siguientes actividades 
+Se reconocen las siguientes actividades y se organiza el proyecto asignando un dirctorio a cada una:
 
-- **Datos**:
+- **Obtención de datos**:
   - **Datos crudos** :  imágenes, videos, etc. sin organizar.
   - **Datasets**: datos organizados para un problema de aprendizaje supervisado. Además, pueden estar organizados para el entrenamiento de un modelo con una herramienta específica (por ejemplo, siguiendo la organización de directorios propuesta por Keras, Darknet, Tensorflow Object Detection API, etc.).
   - **Archivos intermedios**: archivos generados durante algún proceso necesarios para algún procedimiento.
@@ -32,14 +32,6 @@ Se reconocen las siguientes actividades
 
 - **Aplicaciones**: programas que utilizan de la librería [videoanalytics](https://github.com/nhorro/videoanalytics) y los modelos desarrollados para el análisis de videos de pesca. Pueden estar como cuadernos (jupyter), desplegados en forma de servicios con docker-compose, o ambos.
 
-
-
-| Directorio              | Entrada                                                      | Salida                                                       | Descripción                                    |
-| ----------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------- |
-| data-preparation        | Directorio con dataset conteniendo imagenes, video, metadatos,etc. | Directorio o .tar.gz con dataset organizado según lo requerido por el detector y por el object-tracker. | Scripts de preparación de datos.               |
-| object-detector-trainer | Dataset preprocesado                                         | Pesos de YOLOv4 en formato Darknet con opción de conversión a otros formatos. | Entrenador del modelo de detección.            |
-| videoanalytics          | - Imágenes/videos a procesar.<br/>- Configuración de cadena de procesamiento.<br/> | Reporte de detecciones.                                      | Cadenas de procesamiento para video analítico. |
-
 Para los componentes complejos o de propósito general se mantiene un repositorio en github separado.
 
 Este documento describe como clonar estos repositorios en un mismo espacio de trabajo y organizar los archivos de datos y configuración.
@@ -48,31 +40,58 @@ Se prone la siguiente organización de directorios.
 
 ```
 $WORKSPACE_PATH
+    .
+    ├── applications
     ├── assets
-    ├── biblio
-    ├── compose
     ├── data
     │   ├── datasets
     │   │   ├── kaggle-fisheries
-    │   │   └── kaggle-fisheries-yolo
-    │   │       ├── backup
-    │   │       └── data
-    │   ├── media
-    │   ├── models
+    │   │   │   ├── kaggle-ncfm
+    │   │   │   ├── test_stg1
+    │   │   │   └── train
+    │   │   │       ├── ALB
+    │   │   │       ├── BET
+    │   │   │       ├── DOL
+    │   │   │       ├── LAG
+    │   │   │       ├── NoF
+    │   │   │       ├── OTHER
+    │   │   │       ├── SHARK
+    │   │   │       └── YFT
     │   │   ├── kaggle-fisheries-yolo
-    │   │   ├── kaggle-fisheries-yolo-tiny
-    │   │   ├── mirtar-yolo
-    │   │   ├── mirtar-yolo-tiny
+    │   │   │   ├── backup
+    │   │   │   ├── data
+    │   │   │   └── logs
+    │   │   ├── mirtar
+    │   │   │   ├── test
+    │   │   │   └── train
+    │   │   ├── mirtar-aug
+    │   │   │   ├── test
+    │   │   │   └── train
+    │   │   └── mirtar-yolo
+    │   │       ├── backup
+    │   │       ├── data
+    │   │       └── logs
+    │   ├── media
+    │   │   └── videos-youtube
+    │   │       └── cut
+    │   ├── models
+    │   │   ├── coco
+    │   │   ├── kaggle_fisheries
+    │   │   ├── kaggle-fisheries-yolo
+    │   │   └── yolov4-416-tf
     │   └── other
     ├── data-preparation
     │   ├── kaggle-fisheries
     │   └── mirtar
+    ├── doc
+    │   └── assets
     ├── dockers
     │   ├── darknet-gpu
     │   └── jupyter-datascience
-    │       └── conf
-    ├── model-development-and-training    
-    └── videoanalytics    
+    ├── model-development-and-training
+    │   ├── activity-classifier
+    │   ├── feature_extraction
+        └── yolo
 	README.md
 ```
 
@@ -165,6 +184,8 @@ Nota: este docker contiene Tensorboard en el puerto 6006. Considerar usar otro p
 conda env export --name ai-fisheries > ai-fisheries.yml
 ```
 
-### /videoanalytics
+## Instalación y uso de videoanalytics
 
-Componentes específicos para usar con la librería [videoanalytics](https://github.com/nhorro/videoanalytics)
+Las aplicaciones utilizan la librería [videoanalytics](https://github.com/nhorro/videoanalytics), y en algunos casos agregan componentes a la misma.
+
+## Aplicaciones
