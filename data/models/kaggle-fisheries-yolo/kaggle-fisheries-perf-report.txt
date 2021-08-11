@@ -1,29 +1,6 @@
 net.optimized_memory = 0 
 mini_batch = 1, batch = 32, time_steps = 1, train = 0 
-nms_kind: greedynms (1), beta = 0.600000 
-nms_kind: greedynms (1), beta = 0.600000 
-nms_kind: greedynms (1), beta = 0.600000 
 
- seen 64, trained: 185 K-images (2 Kilo-batches_64) 
+ cuDNN status Error in: file: ./src/dark_cuda.c : () : line: 171 : build time: Nov 29 2020 - 16:42:00 
 
- calculation mAP (mean average precision)...
-
- detections_count = 9340, unique_truth_count = 3142  
- rank = 0 of ranks = 9340  rank = 100 of ranks = 9340  rank = 200 of ranks = 9340  rank = 300 of ranks = 9340  rank = 400 of ranks = 9340  rank = 500 of ranks = 9340  rank = 600 of ranks = 9340  rank = 700 of ranks = 9340  rank = 800 of ranks = 9340  rank = 900 of ranks = 9340  rank = 1000 of ranks = 9340  rank = 1100 of ranks = 9340  rank = 1200 of ranks = 9340  rank = 1300 of ranks = 9340  rank = 1400 of ranks = 9340  rank = 1500 of ranks = 9340  rank = 1600 of ranks = 9340  rank = 1700 of ranks = 9340  rank = 1800 of ranks = 9340  rank = 1900 of ranks = 9340  rank = 2000 of ranks = 9340  rank = 2100 of ranks = 9340  rank = 2200 of ranks = 9340  rank = 2300 of ranks = 9340  rank = 2400 of ranks = 9340  rank = 2500 of ranks = 9340  rank = 2600 of ranks = 9340  rank = 2700 of ranks = 9340  rank = 2800 of ranks = 9340  rank = 2900 of ranks = 9340  rank = 3000 of ranks = 9340  rank = 3100 of ranks = 9340  rank = 3200 of ranks = 9340  rank = 3300 of ranks = 9340  rank = 3400 of ranks = 9340  rank = 3500 of ranks = 9340  rank = 3600 of ranks = 9340  rank = 3700 of ranks = 9340  rank = 3800 of ranks = 9340  rank = 3900 of ranks = 9340  rank = 4000 of ranks = 9340  rank = 4100 of ranks = 9340  rank = 4200 of ranks = 9340  rank = 4300 of ranks = 9340  rank = 4400 of ranks = 9340  rank = 4500 of ranks = 9340  rank = 4600 of ranks = 9340  rank = 4700 of ranks = 9340  rank = 4800 of ranks = 9340  rank = 4900 of ranks = 9340  rank = 5000 of ranks = 9340  rank = 5100 of ranks = 9340  rank = 5200 of ranks = 9340  rank = 5300 of ranks = 9340  rank = 5400 of ranks = 9340  rank = 5500 of ranks = 9340  rank = 5600 of ranks = 9340  rank = 5700 of ranks = 9340  rank = 5800 of ranks = 9340  rank = 5900 of ranks = 9340  rank = 6000 of ranks = 9340  rank = 6100 of ranks = 9340  rank = 6200 of ranks = 9340  rank = 6300 of ranks = 9340  rank = 6400 of ranks = 9340  rank = 6500 of ranks = 9340  rank = 6600 of ranks = 9340  rank = 6700 of ranks = 9340  rank = 6800 of ranks = 9340  rank = 6900 of ranks = 9340  rank = 7000 of ranks = 9340  rank = 7100 of ranks = 9340  rank = 7200 of ranks = 9340  rank = 7300 of ranks = 9340  rank = 7400 of ranks = 9340  rank = 7500 of ranks = 9340  rank = 7600 of ranks = 9340  rank = 7700 of ranks = 9340  rank = 7800 of ranks = 9340  rank = 7900 of ranks = 9340  rank = 8000 of ranks = 9340  rank = 8100 of ranks = 9340  rank = 8200 of ranks = 9340  rank = 8300 of ranks = 9340  rank = 8400 of ranks = 9340  rank = 8500 of ranks = 9340  rank = 8600 of ranks = 9340  rank = 8700 of ranks = 9340  rank = 8800 of ranks = 9340  rank = 8900 of ranks = 9340  rank = 9000 of ranks = 9340  rank = 9100 of ranks = 9340  rank = 9200 of ranks = 9340  rank = 9300 of ranks = 9340 class_id = 0, name = alb, ap = 90.34%   	 (TP = 1588, FP = 218) 
-class_id = 1, name = bet, ap = 64.68%   	 (TP = 142, FP = 54) 
-class_id = 2, name = dol, ap = 77.23%   	 (TP = 68, FP = 14) 
-class_id = 3, name = lag, ap = 92.80%   	 (TP = 73, FP = 9) 
-class_id = 4, name = shark, ap = 96.22%   	 (TP = 127, FP = 9) 
-class_id = 5, name = yft, ap = 89.90%   	 (TP = 503, FP = 119) 
-class_id = 6, name = other, ap = 89.26%   	 (TP = 235, FP = 78) 
-
- for conf_thresh = 0.25, precision = 0.85, recall = 0.87, F1-score = 0.86 
- for conf_thresh = 0.25, TP = 2736, FP = 501, FN = 406, average IoU = 66.06 % 
-
- IoU threshold = 50 %, used 101 Recall-points 
- mean average precision (mAP@0.50) = 0.857765, or 85.78 % 
-
-Set -points flag:
- `-points 101` for MS COCO 
- `-points 11` for PascalVOC 2007 (uncomment `difficult` in voc.data) 
- `-points 0` (AUC) for ImageNet, PascalVOC 2010-2012, your custom dataset
+ cuDNN Error: CUDNN_STATUS_BAD_PARAM
