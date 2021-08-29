@@ -1,9 +1,6 @@
 echo $CONDA_PREFIX
-MODEL_NAME=mirtar
-darknet detector map \
-                 $MODEL_NAME.data \
-                 $MODEL_NAME-yolo4.cfg \
-                 backup/${MODEL_NAME}-yolo4_best.weights \
-                 -iou_thresh 0.5 -points 101 \
-                 > ${MODEL_NAME}-perf-report.txt
+darknet detector map mirtar.data \
+                     ../../models/mirtar-yolo/mirtar-yolo4.cfg \
+                     ../../models/mirtar-yolo/mirtar-yolo4.weights \
+                     -iou_thresh 0.5 -points 101 > yolo4-model-performance-report.txt
 

@@ -1,6 +1,0 @@
-net.optimized_memory = 0 
-mini_batch = 1, batch = 32, time_steps = 1, train = 0 
-
- cuDNN status Error in: file: ./src/dark_cuda.c : () : line: 171 : build time: Nov 29 2020 - 16:42:00 
-
- cuDNN Error: CUDNN_STATUS_BAD_PARAM

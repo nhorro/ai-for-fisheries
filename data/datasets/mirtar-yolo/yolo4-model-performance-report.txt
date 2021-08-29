@@ -1,0 +1,25 @@
+net.optimized_memory = 0 
+mini_batch = 1, batch = 16, time_steps = 1, train = 0 
+nms_kind: greedynms (1), beta = 0.600000 
+nms_kind: greedynms (1), beta = 0.600000 
+nms_kind: greedynms (1), beta = 0.600000 
+
+ seen 64, trained: 294 K-images (4 Kilo-batches_64) 
+
+ calculation mAP (mean average precision)...
+
+ detections_count = 203, unique_truth_count = 116  
+ rank = 0 of ranks = 203  rank = 100 of ranks = 203  rank = 200 of ranks = 203 class_id = 0, name = operador, ap = 93.48%   	 (TP = 73, FP = 10) 
+class_id = 1, name = red, ap = 78.85%   	 (TP = 5, FP = 0) 
+class_id = 2, name = pescado, ap = 63.03%   	 (TP = 22, FP = 7) 
+
+ for conf_thresh = 0.25, precision = 0.85, recall = 0.86, F1-score = 0.86 
+ for conf_thresh = 0.25, TP = 100, FP = 17, FN = 16, average IoU = 63.76 % 
+
+ IoU threshold = 50 %, used 101 Recall-points 
+ mean average precision (mAP@0.50) = 0.784539, or 78.45 % 
+
+Set -points flag:
+ `-points 101` for MS COCO 
+ `-points 11` for PascalVOC 2007 (uncomment `difficult` in voc.data) 
+ `-points 0` (AUC) for ImageNet, PascalVOC 2010-2012, your custom dataset
